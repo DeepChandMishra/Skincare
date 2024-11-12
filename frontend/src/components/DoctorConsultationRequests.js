@@ -71,6 +71,10 @@ const DoctorConsultationRequests = () => {
                                 <h3 className="text-lg font-semibold">{request.patientUsername}</h3>
                                 <p className="text-gray-600">Requested Time: {request.dateTime ? new Date(request.dateTime).toLocaleString() : 'N/A'}</p>
                                 <p className="text-gray-600">Status: {request.status}</p>
+
+                                {/* Display reason and description */}
+                                <p className="text-gray-600 mt-2"><strong>Reason:</strong> {request.reason}</p>
+                                <p className="text-gray-600"><strong>Description:</strong> {request.description}</p>
                                 
                                 {request.status === 'Accepted' && updatingId === request.id && (
                                     <div className="mt-2">

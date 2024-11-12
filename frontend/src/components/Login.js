@@ -17,7 +17,13 @@ const Login = ({ setToken, setPatientId, setUsername, setRole, setDoctorId }) =>
 
         try {
             const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-            const { token, userId, username, role, doctorId: receivedDoctorId } = response.data;
+            console.log('Login Response:', response.data);
+            const { token, userId, username, role, doctorId: receivedDoctorId, emailVerified } = response.data;
+            console.log('Email Verified:', emailVerified);
+            if (!emailVerified) {
+                setError('Please verify your email before logging in.');
+                return;
+            }
 
             setToken(token);
             setPatientId(userId);
@@ -30,9 +36,9 @@ const Login = ({ setToken, setPatientId, setUsername, setRole, setDoctorId }) =>
             if (role === 'doctor') {
                 setDoctorId(receivedDoctorId);
                 localStorage.setItem('doctorId', receivedDoctorId);
-                navigate('/doctor-dashboard'); 
+                navigate('/doctor-dashboard'); // Redirect to doctor dashboard
             } else {
-                navigate('/');
+                navigate('/'); // Redirect to patient dashboard or home
             }
         } catch (error) {
             console.error('Login failed', error.response ? error.response.data : error);

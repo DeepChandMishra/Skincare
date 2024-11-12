@@ -5,6 +5,8 @@ const RequestConsultation = ({ patientId, doctorId, onClose }) => {
     const [dateTime, setDateTime] = useState('');
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
+    const [reason, setReason] = useState('');
+    const [description, setDescription] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -12,6 +14,8 @@ const RequestConsultation = ({ patientId, doctorId, onClose }) => {
         formData.append('patientId', patientId);
         formData.append('doctorId', doctorId);
         formData.append('dateTime', dateTime);
+        formData.append('reason', reason);
+        formData.append('description', description);
         formData.append('image', image);
 
         try {
@@ -40,23 +44,36 @@ const RequestConsultation = ({ patientId, doctorId, onClose }) => {
                 <h2 className="text-lg font-semibold mb-4">Request a Consultation</h2>
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-1" htmlFor="dateTime">Date & Time:</label>
-                    <div className="flex items-center">
-                        <input
-                            id="dateTime"
-                            type="datetime-local"
-                            value={dateTime}
-                            onChange={(e) => setDateTime(e.target.value)}
-                            required
-                            className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 w-3/4" 
-                        />
-                        <button 
-                            type="button" 
-                            className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200 flex items-center justify-center h-full"
-                            style={{ height: '38px' }} 
-                        >
-                            Save
-                        </button>
-                    </div>
+                    <input
+                        id="dateTime"
+                        type="datetime-local"
+                        value={dateTime}
+                        onChange={(e) => setDateTime(e.target.value)}
+                        required
+                        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 w-full" 
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1" htmlFor="reason">Reason for Consultation:</label>
+                    <input
+                        id="reason"
+                        type="text"
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        required
+                        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 w-full" 
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1" htmlFor="description">Description:</label>
+                    <textarea
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required
+                        className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 w-full" 
+                        rows="4"
+                    />
                 </div>
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-1" htmlFor="image">Upload Image:</label>
