@@ -15,7 +15,11 @@ exports.getConsultationRequests = async (req, res) => {
     try {
         const consultations = await Consultation.findAll({
             where: { doctorId },
-            include: [{ model: User, as: 'Patient', attributes: ['id', 'username', 'email'] }],
+            include: [{ 
+                model: User, 
+                as: 'Patient', 
+                attributes: ['id', 'username', 'email'] 
+            }],
         });
 
         if (!consultations.length) {
@@ -30,7 +34,8 @@ exports.getConsultationRequests = async (req, res) => {
             dateTime: consultation.dateTime, 
             imageUrl: `${baseUrl}${consultation.imageUrl.replace(/\\/g, '/')}`,
             patientUsername: consultation.Patient.username,
-            patientEmail: consultation.Patient.email,
+            reason: consultation.reason,          // Include reason
+            description: consultation.description, // Include description
         }));
 
         res.json(response);
@@ -38,6 +43,7 @@ exports.getConsultationRequests = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch requests' });
     }
 };
+
 
 
 // Update consultation status

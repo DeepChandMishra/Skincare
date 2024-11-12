@@ -19,6 +19,18 @@ const User = sequelize.define('User', {
         type: DataTypes.ENUM('patient', 'doctor'),
         allowNull: false,
     },
+    isEmailVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false, 
+    },
+    otp: { 
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    emailVerificationToken: {  
+        type: DataTypes.STRING,
+        allowNull: true,
+    }
 });
 
-module.exports = User; 
+module.exports = User;

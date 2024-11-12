@@ -28,12 +28,19 @@ const Consultation = sequelize.define('Consultation', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    reason: {               // Add reason field
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    description: {          // Add description field
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
     status: {
         type: DataTypes.ENUM('pending', 'Accepted', 'Rejected', 'Confirmed', 'Completed'),
         allowNull: false,
         defaultValue: 'pending'
     },
 });
-
 
 module.exports = Consultation;
