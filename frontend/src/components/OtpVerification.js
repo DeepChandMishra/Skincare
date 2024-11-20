@@ -7,9 +7,9 @@ const OtpVerification = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { email } = location.state || {};  // Get email from the previous page state
+  const { email } = location.state;  
 
-  // Handle OTP verification
+  
   const handleOtpVerification = async (e) => {
     e.preventDefault();
 
@@ -24,7 +24,7 @@ const OtpVerification = () => {
 
       if (response.status === 200) {
         alert('OTP verified successfully!');
-        navigate('/login');  // Redirect to login page
+        navigate('/login');  
       }
     } catch (error) {
       console.error('OTP verification failed', error);
@@ -36,9 +36,8 @@ const OtpVerification = () => {
     }
   };
 
-  // Handle cancel button click (navigate to the previous page or login page)
   const handleCancel = () => {
-    navigate('/register');  // You can change this route to wherever you want to redirect
+    navigate('/register');  
   };
 
   return (

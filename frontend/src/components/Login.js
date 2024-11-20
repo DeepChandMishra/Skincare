@@ -36,9 +36,9 @@ const Login = ({ setToken, setPatientId, setUsername, setRole, setDoctorId }) =>
             if (role === 'doctor') {
                 setDoctorId(receivedDoctorId);
                 localStorage.setItem('doctorId', receivedDoctorId);
-                navigate('/doctor-dashboard'); // Redirect to doctor dashboard
+                navigate('/doctor-dashboard');
             } else {
-                navigate('/'); // Redirect to patient dashboard or home
+                navigate('/'); 
             }
         } catch (error) {
             console.error('Login failed', error.response ? error.response.data : error);

@@ -6,7 +6,7 @@ const EmailVerification = () => {
   const [error, setError] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
   const navigate = useNavigate();
-  const token = new URLSearchParams(window.location.search).get('token'); // Extract token from URL
+  const token = new URLSearchParams(window.location.search).get('token'); 
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -20,17 +20,17 @@ const EmailVerification = () => {
         if (response.status === 200) {
           setIsVerified(true);
           setTimeout(() => {
-            navigate('/login'); // Redirect to login after successful verification
-          }, 3000); // Wait 3 seconds before redirecting
+            navigate('/login'); 
+          }, 3000);
         }
       } catch (error) {
         setError('Email verification failed. Please check the token or try again later.');
       }
     };
 
-    verifyEmail(); // Call verifyEmail directly inside the effect
+    verifyEmail(); 
 
-  }, [token, navigate]); // `token` and `navigate` as dependencies
+  }, [token, navigate]);
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">

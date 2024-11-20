@@ -5,6 +5,14 @@ const Status = ({ patientId, userRole }) => {
     const [consultations, setConsultations] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const formatTime = (time) => {
+        if (!time) return '';
+        const [hours, minutes] = time.split(':');
+        const date = new Date();
+        date.setHours(hours, minutes);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    };
+
     useEffect(() => {
         const fetchConsultations = async () => {
             try {
@@ -12,20 +20,24 @@ const Status = ({ patientId, userRole }) => {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
 
-                // If consultations are found, set them
-                setConsultations(response.data);
-                setErrorMessage(''); // Clear any previous error message
-            } catch (error) {
-                // Handle specific error cases
-                if (error.response && error.response.status === 404) {
-                    // Handle case where no consultations were found
-                    setConsultations([]);  // Clear consultations state
-                    setErrorMessage('No consultations found.');
+                if (response.data.message) {
+                    setConsultations([]); 
+                    setErrorMessage(response.data.message); 
+                } else if (Array.isArray(response.data)) {
+                    if (response.data.length === 0) {
+                        setConsultations([]);  
+                        setErrorMessage('No consultations found.');
+                    } else {
+                        setConsultations(response.data); 
+                        setErrorMessage('');  
+                    }
                 } else {
-                    // General error (network failure, etc.)
                     setConsultations([]);
-                    setErrorMessage('Failed to load consultation status. Please try again later.');
+                    setErrorMessage('Unexpected response from the server.');
                 }
+            } catch (error) {
+                setConsultations([]);
+                setErrorMessage('Failed to load consultation status. Please try again later.');
             }
         };
 
@@ -38,20 +50,27 @@ const Status = ({ patientId, userRole }) => {
         <div className="p-4">
             <h2 className="text-2xl font-bold mb-4">Consultation Status</h2>
             
-            {/* Only show error message or empty state based on conditions */}
             {errorMessage ? (
-                <p className="text-red-500">{errorMessage}</p>  // Show the error message in red
+                <p className="text-red-500">{errorMessage}</p>  
             ) : (
                 consultations.length === 0 ? (
-                    <p>No consultations found.</p>  // Show this message if there are no consultations
+                    <p>No consultations found.</p>  
                 ) : (
                     <ul className="space-y-4">
                         {consultations.map(consultation => (
                             <li key={consultation.id} className="p-4 border border-gray-300 rounded-lg shadow-sm">
-                                <h3 className="text-lg font-semibold">{new Date(consultation.dateTime).toLocaleString()}</h3>
+                                <h3 className="text-lg font-semibold">
+                                    {new Date(consultation.doctorAvailability.date).toLocaleDateString()}
+                                </h3>
                                 <p>Status: {consultation.status}</p>
                                 <p>Doctor: {consultation.doctorName}</p>
                                 <p>Specialty: {consultation.specialty}</p>
+
+                                {consultation.selectedTimeSlot && consultation.selectedTimeSlot.startTime && consultation.selectedTimeSlot.endTime ? (
+                                    <p>Booked Slot: {formatTime(consultation.selectedTimeSlot.startTime)} - {formatTime(consultation.selectedTimeSlot.endTime)}</p>
+                                ) : (
+                                    <p>No selected slot available</p>
+                                )}
                             </li>
                         ))}
                     </ul>

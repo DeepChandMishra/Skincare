@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
-  const [specialization, setSpecialization] = useState('');
-  const [contact, setContact] = useState('');
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [contact, setContact] = useState("");
   const [error, setError] = useState(null);
-  const [verificationMessage, setVerificationMessage] = useState('');  // For role-based messages
-  const navigate = useNavigate(); // Initialize navigate
+  const [verificationMessage, setVerificationMessage] = useState(""); 
+  const navigate = useNavigate();
 
   // Handle the registration form submission
   const handleSubmit = async (e) => {
@@ -24,27 +24,34 @@ const Register = () => {
         username,
         password,
         role,
-        ...(role === 'doctor' && { specialization, contact }), // Only for doctor
+        ...(role === "doctor" && { specialization, contact }),
       };
 
-      const response = await axios.post('http://localhost:5000/api/auth/register', data);
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        data
+      );
 
-      if (response.status === 201) {  // Status code should be 201 on success
-        if (role === 'patient') {
-          setVerificationMessage('Registration successful! Please check your email for the OTP verification.');
-          alert('Registration successful! OTP sent to your email.');
-          navigate('/verify-otp', { state: { email } });  // Redirect to OTP verification page
-        } else if (role === 'doctor') {
-          setVerificationMessage('Registration successful! Please check your email for the verification link.');
-          alert('Registration successful! Please verify your email.');
+      if (response.status === 201) {
+        if (role === "patient") {
+          setVerificationMessage(
+            "Registration successful! Please check your email for the OTP verification."
+          );
+          alert("Registration successful! OTP sent to your email.");
+          navigate("/verify-otp", { state: { email } }); // Redirect to OTP verification page
+        } else if (role === "doctor") {
+          setVerificationMessage(
+            "Registration successful! Please check your email for the verification link."
+          );
+          alert("Registration successful! Please verify your email.");
         }
       }
     } catch (error) {
-      console.error('Registration failed', error);
+      console.error("Registration failed", error);
       if (error.response) {
         setError(`Registration failed: ${error.response.data.error}`);
       } else {
-        setError('Registration failed. Please try again.');
+        setError("Registration failed. Please try again.");
       }
     }
   };
@@ -98,13 +105,15 @@ const Register = () => {
                 required
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
-                <option value="" disabled>Select your role</option>
+                <option value="" disabled>
+                  Select your role
+                </option>
                 <option value="patient">Patient</option>
                 <option value="doctor">Doctor</option>
               </select>
             </div>
 
-            {role === 'doctor' && (
+            {role === "doctor" && (
               <>
                 <div className="mb-4">
                   <input
@@ -143,6 +152,15 @@ const Register = () => {
           <div className="p-4 bg-green-100 text-center rounded-lg mb-4">
             <h3 className="text-lg font-semibold">{verificationMessage}</h3>
           </div>
+        )}
+
+        {!verificationMessage && (
+          <p className="mt-4 text-center text-gray-600">
+            Already have an account?{" "}
+            <a href="/login" className="text-blue-500 hover:underline">
+              Login
+            </a>
+          </p>
         )}
       </div>
     </div>

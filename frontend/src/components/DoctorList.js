@@ -5,6 +5,7 @@ import RequestConsultation from './RequestConsultation';
 const DoctorList = ({ patientId, userRole }) => {
     const [doctors, setDoctors] = useState([]);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [availableSlots, setAvailableSlots] = useState([]);  
 
     useEffect(() => {
         const fetchDoctors = async () => {
@@ -22,22 +23,35 @@ const DoctorList = ({ patientId, userRole }) => {
         fetchDoctors();
     }, []);
 
-    const handleConsult = (doctorId) => {
+    const handleConsult = async (doctorId) => {
         console.log('Consult button clicked for doctor ID:', doctorId);
         if (doctorId) {
             setSelectedDoctor(doctorId);
+    
+            try {
+                const response = await axios.get(`http://localhost:5000/api/doctors/${doctorId}/availability`, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                });
+                console.log('Fetched Availability:', response.data);
+                setAvailableSlots(response.data);  
+            } catch (error) {
+                console.error('Error fetching availability:', error);
+                alert('Failed to load doctor availability.');
+            }
         } else {
             console.error('Doctor ID is undefined');
         }
     };
+    
 
     const handleClose = () => {
         setSelectedDoctor(null);
+        setAvailableSlots([]);  
     };
 
     return (
         <div className="relative p-4">
-            <h2 className="text-2xl font-bold mb-6">Available Doctors</h2>
+            <h2 className="text-2xl text-teal-600 font-bold mb-6">Available Doctors</h2>
             {doctors.length === 0 ? (
                 <p>No doctors available at this time.</p>
             ) : (
@@ -53,7 +67,7 @@ const DoctorList = ({ patientId, userRole }) => {
                             </div>
                             {userRole === 'patient' && (
                                 <button 
-                                    className="ml-4 p-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-200" 
+                                    className="ml-4 p-2 bg-teal-500 text-white rounded hover:bg-green-600 transition duration-200" 
                                     onClick={() => handleConsult(doctor.id)}
                                 >
                                     Consult
@@ -67,6 +81,7 @@ const DoctorList = ({ patientId, userRole }) => {
                 <RequestConsultation 
                     patientId={patientId} 
                     doctorId={selectedDoctor} 
+                    availableSlots={availableSlots}  
                     onClose={handleClose} 
                 />
             )}
