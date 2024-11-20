@@ -3,7 +3,7 @@ const multer = require('multer');
 const {
     getDoctors,
     requestConsultation,
-    getConsultationStatus
+    getConsultationStatus,getAvailableSlotsForAllPatients
 } = require('../controllers/consultationController');
 const authMiddleware = require('../middleware/authMiddleware');
 const checkRole = require('../middleware/checkRole'); 
@@ -15,15 +15,22 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname); 
-    },
+        cb(null, file.originalname);
+    }
 });
 
-const upload = multer({ storage });
+// Multer configuration with size and file limits
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024, 
+    }
+}).array('images', 5);
 
 router.get('/doctors', authMiddleware, getDoctors);
-router.post('/request', authMiddleware, upload.single('image'), requestConsultation);
+router.post('/request', authMiddleware, upload, requestConsultation);
 router.get('/status/:patientId', authMiddleware, checkRole(['patient']), getConsultationStatus);
+router.get('/getAvailableSlotsForAllPatients/:doctorId', authMiddleware, checkRole(['patient']), getAvailableSlotsForAllPatients);
 
 
 module.exports = router;

@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config');
 const User = require('./User');
 const Doctor = require('./Doctor');
+const DoctorAvailability = require('./DoctorAvailability');
 
 const Consultation = sequelize.define('Consultation', {
     patientId: {
@@ -20,26 +21,38 @@ const Consultation = sequelize.define('Consultation', {
             key: 'id',
         },
     },
-    dateTime: {
-        type: DataTypes.DATE,
+    doctorAvailabilityId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+            model: DoctorAvailability,
+            key: 'id',
+        },
     },
-    imageUrl: {
+    reason: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    reason: {               // Add reason field
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    description: {          // Add description field
+    description: {
         type: DataTypes.TEXT,
         allowNull: false,
     },
-    status: {
-        type: DataTypes.ENUM('pending', 'Accepted', 'Rejected', 'Confirmed', 'Completed'),
+    imageUrl: {
+        type: DataTypes.JSON,
         allowNull: false,
-        defaultValue: 'pending'
+    },
+    status: {
+        type: DataTypes.ENUM('pending', 'Accepted', 'Rejected','Completed'),
+        allowNull: false,
+        defaultValue: 'pending',
+    },
+    startTime: {
+        type: DataTypes.TIME,  
+        allowNull: false,
+    },
+    endTime: {
+        type: DataTypes.TIME,  
+        allowNull: false,
     },
 });
 

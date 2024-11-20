@@ -5,6 +5,7 @@ const { sequelize } = require('./config');
 const { User, Doctor, Consultation } = require('./models'); 
 const authRoutes = require('./routes/authRoutes');
 const consultationRoutes = require('./routes/consultationRoutes');
+const doctorAvailabilityRoutes = require('./routes/doctorAvailabilityRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const path = require('path');
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/doctors', doctorRoutes);
+app.use('/api', doctorAvailabilityRoutes);
 
 const PORT = process.env.PORT;
 
