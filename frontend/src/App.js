@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -54,11 +57,7 @@ const App = () => {
     setDoctorId("");
     setUsername("");
     setRole("");
-    localStorage.removeItem("token");
-    localStorage.removeItem("patientId");
-    localStorage.removeItem("doctorId");
-    localStorage.removeItem("role");
-    localStorage.removeItem("username");
+    localStorage.clear();
   };
 
   return (
@@ -68,6 +67,7 @@ const App = () => {
         <Routes>
           <Route
             path="/login"
+            index
             element={
               !token ? (
                 <Login

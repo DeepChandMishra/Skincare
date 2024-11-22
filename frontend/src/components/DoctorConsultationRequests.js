@@ -6,7 +6,7 @@ const DoctorConsultationRequests = () => {
     const [requests, setRequests] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [imageIndexes, setImageIndexes] = useState({});
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -21,7 +21,6 @@ const DoctorConsultationRequests = () => {
                 }
                 setRequests(response.data);
             } catch (error) {
-                console.error('Error fetching consultation requests:', error);
                 setError('Failed to load consultation requests.');
             } finally {
                 setIsLoading(false);
@@ -31,17 +30,45 @@ const DoctorConsultationRequests = () => {
         fetchRequests();
     }, []);
 
-    // Filter out completed requests
-    const activeRequests = requests.filter(request => request.status !== 'Completed');
-
     const formatTime = (timeString) => {
-        const date = new Date(`1970-01-01T${timeString}Z`); 
+        const date = new Date(`1970-01-01T${timeString}Z`);
         const hours = date.getUTCHours();
         const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-        const period = hours >= 12 ? 'PM' : 'AM';
-        const formattedHour = hours % 12 || 12; 
-        return `${formattedHour}:${minutes} ${period}`;
+        return `${(hours % 12) || 12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
     };
+
+    const handleNext = (requestId) => {
+        setImageIndexes((prev) => {
+            const validImages = getValidImages(requestId);
+            if (validImages.length === 0) return prev;
+            
+            const currentIndex = prev[requestId] || 0;
+            const nextIndex = (currentIndex + 1) % validImages.length;
+            return { ...prev, [requestId]: nextIndex };
+        });
+    };
+
+    const handlePrev = (requestId) => {
+        setImageIndexes((prev) => {
+            const validImages = getValidImages(requestId);
+            if (validImages.length === 0) return prev;
+
+            const currentIndex = prev[requestId] || 0;
+            const prevIndex = (currentIndex - 1 + validImages.length) % validImages.length;
+            return { ...prev, [requestId]: prevIndex };
+        });
+    };
+
+    const getValidImages = (requestId) => {
+        const request = requests.find((r) => r.id === requestId);
+        let images = [];
+        try {
+            images = JSON.parse(request?.imageUrl || '[]');
+        } catch (error) {}
+        return images.filter((image) => image?.trim());
+    };
+
+    const activeRequests = requests.filter((request) => request.status !== 'Completed');
 
     return (
         <div className="p-4">
@@ -56,39 +83,17 @@ const DoctorConsultationRequests = () => {
             ) : (
                 <ul className="space-y-4">
                     {activeRequests.map((request) => {
-                        let images = [];
-                        try {
-                            images = JSON.parse(request.imageUrl); 
-                        } catch (error) {
-                            console.error("Error parsing imageUrl:", error);
-                            images = [];  
-                        }
+                        const validImages = getValidImages(request.id);
+                        if (validImages.length === 0) return null;
 
-                        const handleNextImage = () => {
-                            if (images.length > 1) {
-                                setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-                            }
-                        };
-
-                        const handlePreviousImage = () => {
-                            if (images.length > 1) {
-                                setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-                            }
-                        };
+                        const currentImageIndex = imageIndexes[request.id] || 0;
 
                         return (
-                            <li key={request.id} className="flex bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                            <li key={request.id} className="flex bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden h-70">
                                 <div className="flex-1 p-4 flex flex-col justify-between">
                                     <h3 className="text-2xl font-semibold">{request.patientUsername}</h3>
-
-                                    <p className="text-gray-600">
-                                        <strong>Selected Date:</strong> {new Date(request.doctorAvailability.date).toLocaleDateString()} 
-                                    </p>
-
-                                    <p className="text-gray-600">
-                                        <strong>Requested Time:</strong> {formatTime(request.selectedTimeSlot.startTime)} - {formatTime(request.selectedTimeSlot.endTime)}
-                                    </p>
-
+                                    <p className="text-gray-600"><strong>Selected Date:</strong> {new Date(request.doctorAvailability.date).toLocaleDateString()}</p>
+                                    <p className="text-gray-600"><strong>Requested Time:</strong> {formatTime(request.selectedTimeSlot.startTime)} - {formatTime(request.selectedTimeSlot.endTime)}</p>
                                     <p className="text-gray-600"><strong>Status:</strong> {request.status}</p>
                                     <p className="text-gray-600"><strong>Reason:</strong> {request.reason}</p>
                                     <p className="text-gray-600"><strong>Description:</strong> {request.description}</p>
@@ -100,32 +105,30 @@ const DoctorConsultationRequests = () => {
                                     />
                                 </div>
 
-                                {/* Right side: Image */}
-                                {images.length > 0 && (
-                                    <div className="relative w-1/3 flex items-center justify-center p-2">
-                                        <img
-                                            src={`http://localhost:5000/${images[currentImageIndex]}`}  
-                                            alt="Consultation"
-                                            className="w-full h-48 object-cover rounded-lg"     
-                                        />
-                                        {images.length > 1 && (
-                                            <>
-                                                <button 
-                                                    onClick={handlePreviousImage}
-                                                    className="absolute top-1/2 left-0 transform -translate-y-1/2 text-white text-3xl bg-black bg-opacity-50 p-2 rounded-full cursor-pointer"
-                                                >
-                                                    &lt;
-                                                </button>
-                                                <button 
-                                                    onClick={handleNextImage}
-                                                    className="absolute top-1/2 right-0 transform -translate-y-1/2 text-white text-3xl bg-black bg-opacity-50 p-2 rounded-full cursor-pointer"
-                                                >
-                                                    &gt;
-                                                </button>
-                                            </>
-                                        )}
+                                <div className="relative w-1/3 h-full flex items-center justify-center"> {/* Ensures the image container fills the available height */}
+                                    <img 
+                                        src={`http://localhost:5000/${validImages[currentImageIndex]}`} 
+                                        alt="Consultation" 
+                                        className="w-full h-full object-cover rounded-lg"  
+                                    />
+
+                                    <div className="absolute top-1/2 left-0 transform -translate-y-1/2">
+                                        <button 
+                                            onClick={() => handlePrev(request.id)} 
+                                            className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700"
+                                        >
+                                            &lt;
+                                        </button>
                                     </div>
-                                )}
+                                    <div className="absolute top-1/2 right-0 transform -translate-y-1/2">
+                                        <button 
+                                            onClick={() => handleNext(request.id)} 
+                                            className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700"
+                                        >
+                                            &gt;
+                                        </button>
+                                    </div>
+                                </div>
                             </li>
                         );
                     })}
