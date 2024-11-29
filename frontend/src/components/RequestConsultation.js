@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import ConsultationDetails from './ConsultationDetailsForm'; 
 
-const RequestConsultation = ({ patientId, doctorId, onClose }) => {
+const RequestConsultation = ({ doctorId, onClose }) => {
     const [availableSlots, setAvailableSlots] = useState([]); 
     const [selectedSlot, setSelectedSlot] = useState(null); 
     const [selectedDate, setSelectedDate] = useState(''); 
@@ -201,7 +201,6 @@ const RequestConsultation = ({ patientId, doctorId, onClose }) => {
                 {/* If a slot is selected, show the consultation details form */}
                 {isSlotSelected && !isConsultationRequested && (
                     <ConsultationDetails
-                        patientId={patientId}
                         doctorId={doctorId}
                         selectedSlot={selectedSlot}
                         onClose={onClose} 

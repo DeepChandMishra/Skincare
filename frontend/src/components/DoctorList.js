@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import RequestConsultation from './RequestConsultation';
 
-const DoctorList = ({ patientId, userRole }) => {
+const DoctorList = ({  userRole }) => {
     const [doctors, setDoctors] = useState([]);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [availableSlots, setAvailableSlots] = useState([]);  
@@ -79,7 +79,6 @@ const DoctorList = ({ patientId, userRole }) => {
             )}
             {selectedDoctor && (
                 <RequestConsultation 
-                    patientId={patientId} 
                     doctorId={selectedDoctor} 
                     availableSlots={availableSlots}  
                     onClose={handleClose} 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const Status = ({ patientId, userRole }) => {
+const Status = ({userRole }) => {
     const [consultations, setConsultations] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const patientId=localStorage.getItem('patientId');
 
     const formatTime = (time) => {
         if (!time) return '';

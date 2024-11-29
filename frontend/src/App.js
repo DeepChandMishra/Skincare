@@ -19,49 +19,34 @@ import DoctorConsultationRequests from "./components/DoctorConsultationRequests"
 import EmailVerification from "./components/EmailVerification";
 import OtpVerification from "./components/OtpVerification";
 import DoctorAvailability from "./components/DoctorAvailability"
+import { PatientProvider } from "./components/PatientContext";
 
 const App = () => {
   const [token, setToken] = useState(null);
-  const [patientId, setPatientId] = useState("");
-  const [doctorId, setDoctorId] = useState("");
-  const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    const storedPatientId = localStorage.getItem("patientId");
-    const storedDoctorId = localStorage.getItem("doctorId");
     const storedRole = localStorage.getItem("role");
-    const storedUsername = localStorage.getItem("username");
-
     if (storedToken) {
       setToken(storedToken);
     }
-    if (storedPatientId) {
-      setPatientId(storedPatientId);
-    }
-    if (storedDoctorId) {
-      setDoctorId(storedDoctorId);
-    }
+    
     if (storedRole) {
       setRole(storedRole);
     }
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
+    
   }, []);
 
   const handleLogout = () => {
     setToken(null);
-    setPatientId("");
-    setDoctorId("");
-    setUsername("");
     setRole("");
     localStorage.clear();
   };
 
   return (
-    <Router>
+    <PatientProvider>
+       <Router>
       <div className="container mx-auto p-4">
         {token && <Navbar token={token} setToken={handleLogout} role={role} />}
         <Routes>
@@ -72,10 +57,7 @@ const App = () => {
               !token ? (
                 <Login
                   setToken={setToken}
-                  setPatientId={setPatientId}
-                  setUsername={setUsername}
                   setRole={setRole}
-                  setDoctorId={setDoctorId}
                 />
               ) : (
                 <Navigate to="/" />
@@ -94,7 +76,7 @@ const App = () => {
             element={
               token ? (
                 role === "patient" ? (
-                  <Dashboard username={username} />
+                  <Dashboard />
                 ) : (
                   <Navigate to="/doctor-dashboard" />
                 )
@@ -108,7 +90,7 @@ const App = () => {
             path="/doctor-dashboard"
             element={
               token && role === "doctor" ? (
-                <DoctorDashboard username={username} />
+                <DoctorDashboard />
               ) : (
                 <Navigate to="/login" />
               )
@@ -119,7 +101,7 @@ const App = () => {
             path="/doctors"
             element={
               token && role === "patient" ? (
-                <DoctorList patientId={patientId} userRole={role} />
+                <DoctorList  userRole={role} />
               ) : (
                 <Navigate to="/login" />
               )
@@ -130,7 +112,7 @@ const App = () => {
             path="/status"
             element={
               token && role === "patient" ? (
-                <Status patientId={patientId} userRole={role} />
+                <Status userRole={role} />
               ) : (
                 <Navigate to="/login" />
               )
@@ -152,7 +134,7 @@ const App = () => {
             path="/doctor-requests"
             element={
               token && role === "doctor" ? (
-                <DoctorConsultationRequests doctorId={doctorId} />
+                <DoctorConsultationRequests />
               ) : (
                 <Navigate to="/login" />
               )
@@ -161,6 +143,7 @@ const App = () => {
         </Routes>
       </div>
     </Router>
+    </PatientProvider>
   );
 };
 

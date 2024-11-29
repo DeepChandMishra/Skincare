@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ setToken, setPatientId, setUsername, setRole, setDoctorId }) => {
+const Login = ({ setToken,setRole }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -26,15 +26,13 @@ const Login = ({ setToken, setPatientId, setUsername, setRole, setDoctorId }) =>
             }
 
             setToken(token);
-            setPatientId(userId);
-            setUsername(username);
             setRole(role);
             localStorage.setItem('token', token);
             localStorage.setItem('patientId', userId);
             localStorage.setItem('role', role);
+            localStorage.setItem('username', username);
 
             if (role === 'doctor') {
-                setDoctorId(receivedDoctorId);
                 localStorage.setItem('doctorId', receivedDoctorId);
                 navigate('/doctor-dashboard');
             } else {

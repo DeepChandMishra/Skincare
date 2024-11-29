@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
+import { PatientContext } from './PatientContext';
 
-const ConsultationDetails = ({ patientId, doctorId, selectedSlot, onClose }) => {
+const ConsultationDetails = ({ doctorId, selectedSlot, onClose }) => {
     const [images, setImages] = useState([]); 
     const [reason, setReason] = useState(''); 
     const [description, setDescription] = useState(''); 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(''); 
+    const {patientId}=useContext(PatientContext);
 
     const MAX_FILE_SIZE = 10 * 1024 * 1024; 
     const MAX_FILES = 5;
@@ -38,6 +40,8 @@ const ConsultationDetails = ({ patientId, doctorId, selectedSlot, onClose }) => 
 
         const formData = new FormData();
         formData.append('patientId', patientId);
+        console.log("if",patientId);
+        
         formData.append('doctorId', doctorId);
         formData.append('doctorAvailabilityId', selectedSlot.id.split('-')[0]); 
         formData.append('reason', reason);

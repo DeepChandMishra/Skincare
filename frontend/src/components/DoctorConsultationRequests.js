@@ -89,11 +89,18 @@ const DoctorConsultationRequests = () => {
                         const currentImageIndex = imageIndexes[request.id] || 0;
 
                         return (
-                            <li key={request.id} className="flex bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden h-70">
+                            <li 
+                                key={request.id} 
+                                className="flex bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden h-[300px]"
+                            >
                                 <div className="flex-1 p-4 flex flex-col justify-between">
                                     <h3 className="text-2xl font-semibold">{request.patientUsername}</h3>
-                                    <p className="text-gray-600"><strong>Selected Date:</strong> {new Date(request.doctorAvailability.date).toLocaleDateString()}</p>
-                                    <p className="text-gray-600"><strong>Requested Time:</strong> {formatTime(request.selectedTimeSlot.startTime)} - {formatTime(request.selectedTimeSlot.endTime)}</p>
+                                    <p className="text-gray-600">
+                                        <strong>Selected Date:</strong> {new Date(request.doctorAvailability.date).toLocaleDateString()}
+                                    </p>
+                                    <p className="text-gray-600">
+                                        <strong>Requested Time:</strong> {formatTime(request.selectedTimeSlot.startTime)} - {formatTime(request.selectedTimeSlot.endTime)}
+                                    </p>
                                     <p className="text-gray-600"><strong>Status:</strong> {request.status}</p>
                                     <p className="text-gray-600"><strong>Reason:</strong> {request.reason}</p>
                                     <p className="text-gray-600"><strong>Description:</strong> {request.description}</p>
@@ -105,13 +112,15 @@ const DoctorConsultationRequests = () => {
                                     />
                                 </div>
 
-                                <div className="relative w-1/3 h-full flex items-center justify-center"> {/* Ensures the image container fills the available height */}
+                                {/* Image Section */}
+                                <div className="relative w-1/3 h-full">
                                     <img 
                                         src={`http://localhost:5000/${validImages[currentImageIndex]}`} 
                                         alt="Consultation" 
-                                        className="w-full h-full object-cover rounded-lg"  
+                                        className="w-full h-full object-cover" 
                                     />
 
+                                    {/* Navigation buttons */}
                                     <div className="absolute top-1/2 left-0 transform -translate-y-1/2">
                                         <button 
                                             onClick={() => handlePrev(request.id)} 
